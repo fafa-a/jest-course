@@ -27,7 +27,7 @@ describe("Utils test suite", () => {
       }).toThrowError("arg is null or undefined!");
     });
 
-    it.only("Should throw error when arg is null or undefined - try catch block", () => {
+    it("Should throw error when arg is null or undefined - try catch block", () => {
       try {
         sut.toUpperCase("");
         fail("Should have thrown an error!");
