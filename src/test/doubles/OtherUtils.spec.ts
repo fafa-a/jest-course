@@ -1,75 +1,29 @@
-import {
-  calculateComplexity,
-  toUpperCaseWithCb,
-} from "../../app/doubles/OtherUtils";
+import { OtherStringUtils } from "../../app/doubles/OtherUtils";
 
 describe("OtherUtils", () => {
-  describe.only("Tracking callbacks with Jest mocks", () => {
-    const callBackmock = jest.fn();
-    afterEach(() => {
-      callBackmock.mockClear();
-      // jest.clearAllMocks();
+  describe("OtherStringUtils tests with spieces", () => {
+    let sut: OtherStringUtils;
+    beforeEach(() => {
+      sut = new OtherStringUtils();
     });
 
-    it("Calls callback for invalid argument - track calls", () => {
-      const actual = toUpperCaseWithCb("", callBackmock);
-      expect(actual).toBeUndefined();
-      expect(callBackmock).toBeCalledWith("Invalid argument");
-      expect(callBackmock).toBeCalledTimes(1);
+    test("Use a spy to track calls", () => {
+      const toUpperCaseSpy = jest.spyOn(sut, "toUpperCase");
+      sut.toUpperCase("abc");
+      expect(toUpperCaseSpy).toBeCalledWith("abc");
     });
 
-    it("Calls callback for valid argument - track calls", () => {
-      const actual = toUpperCaseWithCb("abc", callBackmock);
-      expect(actual).toBe("ABC");
-      expect(callBackmock).toBeCalledWith("Called function with abc");
-      expect(callBackmock).toBeCalledTimes(1);
-    });
-  });
-  describe("Tracking callbacks", () => {
-    let cbArgs = [];
-    let timesCalled = 0;
-
-    function callBackmock(arg: string) {
-      cbArgs.push(arg);
-      timesCalled++;
-    }
-
-    afterEach(() => {
-      cbArgs = [];
-      timesCalled = 0;
+    test("Use a spy to track calls to other modules", () => {
+      const consoleLogSpy = jest.spyOn(console, "log");
+      sut.logString("abc");
+      expect(consoleLogSpy).toBeCalledWith("abc");
     });
 
-    it("Calls callback for invalid argument - track calls", () => {
-      const actual = toUpperCaseWithCb("", callBackmock);
-      expect(actual).toBeUndefined();
-      expect(cbArgs).toContain("Invalid argument");
-      expect(timesCalled).toBe(1);
+    test("Use a spy to replace the implementation of a method", () => {
+      jest.spyOn(sut, "callExternalService").mockImplementation(() => {
+        console.log("Mocked implementation !!!!");
+      });
+      sut.callExternalService();
     });
-
-    it("Calls callback for valid argument - track calls", () => {
-      const actual = toUpperCaseWithCb("abc", callBackmock);
-      expect(actual).toBe("ABC");
-      expect(cbArgs).toContain("Called function with abc");
-      expect(timesCalled).toBe(1);
-    });
-  });
-
-  it("toUpperCaseWithCb - calls callback for invalid argument", () => {
-    const actual = toUpperCaseWithCb("", () => {});
-    expect(actual).toBeUndefined();
-  });
-
-  it("toUpperCaseWithCb - calls callback for valid argument", () => {
-    const actual = toUpperCaseWithCb("abc", () => {});
-    expect(actual).toBe("ABC");
-  });
-
-  it("Calculate complexity", () => {
-    const someInfo = {
-      length: 5,
-      extraInfo: { Fied1: "Value1", Field2: "Value2" },
-    };
-    const actual = calculateComplexity(someInfo as any);
-    expect(actual).toBe(10);
   });
 });
